@@ -1,0 +1,6 @@
+body {}
+
+#Article_frequency .form-widget-compound>div>div {
+    float: left;
+    margin-right: 10px;
+}
