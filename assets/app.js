@@ -8,3 +8,14 @@
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelector('#Article_type').addEventListener('change', function () {
+
+        var text = this.options[this.selectedIndex].text;
+
+        console.log(text.toLowerCase());
+
+    });
+
+});

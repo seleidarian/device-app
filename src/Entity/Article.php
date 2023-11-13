@@ -31,11 +31,28 @@ class Article
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo_spectr = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true, enumType: ArticleAims::class)]
     private ?ArticleAims $aim = null;
+
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $targets = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $duration = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $bandwidth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $width = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $signal = null;
+
+    const DESCRIPTION_PATH = '/uploads/documents/';
 
     public function getId(): ?int
     {
@@ -72,7 +89,7 @@ class Article
 
         if (is_array($this->frequency)) {
             foreach ($this->frequency as $step) {
-                $arr[] = implode(' - ', $step);
+                $arr[] = implode('-', $step);
             }
         }
 
@@ -135,9 +152,9 @@ class Article
         return $this;
     }
 
-    public function getPhotoUrl()
+    public function getDescriptionUrl()
     {
-        return $this->getPhoto() ? '/uploads/images/' . $this->getPhoto() : '';
+        return self::DESCRIPTION_PATH . $this->getDescription();
     }
 
     public function getAim(): ?ArticleAims
@@ -148,6 +165,66 @@ class Article
     public function setAim(?ArticleAims $aim): static
     {
         $this->aim = $aim;
+
+        return $this;
+    }
+
+    public function getTargets(): ?array
+    {
+        return $this->targets;
+    }
+
+    public function setTargets(?array $targets): static
+    {
+        $this->targets = $targets;
+
+        return $this;
+    }
+
+    public function getDuration(): ?int
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(?int $duration): static
+    {
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getBandwidth(): ?int
+    {
+        return $this->bandwidth;
+    }
+
+    public function setBandwidth(?int $bandwidth): static
+    {
+        $this->bandwidth = $bandwidth;
+
+        return $this;
+    }
+
+    public function getWidth(): ?int
+    {
+        return $this->width;
+    }
+
+    public function setWidth(?int $width): static
+    {
+        $this->width = $width;
+
+        return $this;
+    }
+
+    public function isSignal(): ?bool
+    {
+        return $this->signal;
+    }
+
+    public function setSignal(?bool $signal): static
+    {
+        $this->signal = $signal;
 
         return $this;
     }
