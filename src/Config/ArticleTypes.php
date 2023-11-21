@@ -4,11 +4,11 @@ namespace App\Config;
 
 use App\Util\EnumToArray;
 
-enum ArticleTypes: string
+enum ArticleTypes: int
 {
     use EnumToArray;
 
-    case RLS = '1';
-    case BPLA = '2';
-    case REB = '3';
+    case BPLA = 2;
+    case RLS = 1;
+    case REB = 3;
 }

@@ -10,12 +10,69 @@ import './styles/app.css';
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    document.querySelector('#Article_type').addEventListener('change', function () {
+    document.querySelectorAll('input[name="Article[type]"]').forEach(function (item) {
+        item.addEventListener('change', function () {
 
-        var text = this.options[this.selectedIndex].text;
+            let targets = this.getAttribute('data-targets');
+            let selectedArticleType = this.getAttribute('data-type');
 
-        console.log(text.toLowerCase());
+            document.querySelectorAll('#Article_targets label').forEach(function (item) {
 
+                item.parentNode.style.display
+                    = targets.includes(item.textContent) ? 'block' : 'none';
+
+                item.parentNode.querySelector('input').disabled
+                    = targets.includes(item.textContent) ? false : true;
+            })
+
+            document.querySelectorAll('.additional-fields').forEach(function (item) {
+
+                item.parentNode.style.display
+                    = item.classList.contains(selectedArticleType) ? 'block' : 'none';
+
+                item.querySelectorAll('input').forEach(function (input) {
+                    input.disabled = item.classList.contains(selectedArticleType) ? false : true;
+                });
+
+            });
+
+            document.querySelectorAll('#Article_work_mode input').forEach(function (option) {
+
+                if (option.hasAttribute('data-type')) {
+
+                    option.parentNode.style.display
+                        = option.getAttribute('data-type').includes(selectedArticleType) ? 'block' : 'none';
+                }
+            });
+
+            document.querySelectorAll('#Article_work_type input').forEach(function (option) {
+
+                if (option.hasAttribute('data-type')) {
+
+                    option.parentNode.style.display
+                        = option.getAttribute('data-type').includes(selectedArticleType) ? 'block' : 'none';
+                }
+            });
+
+
+        });
     });
+
+    document.querySelector('#Article_signal').addEventListener('click', function (Event) {
+
+        let signal = this;
+
+        [
+            document.querySelector('.bandwidth.form-group'),
+            document.querySelector('.duration.form-group'),
+            document.querySelector('.width.form-group')
+        ].forEach(function (item) {
+            item.parentNode.style.display = signal.checked ? '' : 'none';
+        });
+
+    })
+
+    document.querySelector('#Article_type input[name="Article[type]"]:checked').dispatchEvent(new Event('change'));
+    document.querySelector('#Article_signal').dispatchEvent(new Event('click'));
 
 });
