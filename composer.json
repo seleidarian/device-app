@@ -17,7 +17,8 @@
         "symfony/password-hasher": "6.3.*",
         "symfony/runtime": "6.3.*",
         "symfony/webpack-encore-bundle": "^2.1",
-        "symfony/yaml": "6.3.*"
+        "symfony/yaml": "6.3.*",
+        "vich/uploader-bundle": "^2.2"
     },
     "config": {
         "allow-plugins": {
@@ -68,6 +69,9 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.50"
+        "symfony/maker-bundle": "^1.50",
+        "symfony/stopwatch": "6.3.*",
+        "symfony/var-dumper": "6.3.*",
+        "symfony/web-profiler-bundle": "6.3.*"
     }
 }

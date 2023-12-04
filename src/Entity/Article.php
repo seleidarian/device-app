@@ -3,71 +3,22 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Config\ArticleTypes;
 use App\Config\ArticleAims;
-use App\Util\EnumToArray;
-
-enum BplaSignalKind: int
-{
-
-    case Телеметрія = 1;
-    case Керування = 2;
-    case Відео = 3;
-}
-
-enum BplaLaType: int
-{
-    case Літак = 1;
-    case Крило = 2;
-    case Коптер = 3;
-}
-
-enum BplaEngine: int
-{
-    case Електро = 1;
-    case ДВЗ = 2;
-}
-
-enum BplaSignalType: int
-{
-    case ППРЧ = 1;
-    case ФРЧ = 2;
-}
-
-enum BplaMode: int
-{
-    case Аналог = 1;
-    case Цифра = 2;
-}
-
-enum WorkMode: int
-{
-    case Розвідка = 1;
-    case Подавлення = 2;
-
-    case Пеленгация = 3;
-    case Супровід = 4;
-}
-
-enum WorkType: int
-{
-    case Стаціонарний  = 1;
-    case Мобільний = 2;
-
-    case Окопний = 3;
-}
-
-enum BarrierType: int
-{
-    case Статичний = 1;
-    case Змінний = 2;
-}
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[Vich\Uploadable]
+#[ORM\HasLifecycleCallbacks]
 class Article
 {
+    const DESCRIPTION_PATH = '/uploads/documents/';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -81,6 +32,9 @@ class Article
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $frequency = null;
+
+    #[Vich\UploadableField(mapping: 'articles', fileNameProperty: 'photo')]
+    private ?File $photoFile = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
@@ -133,7 +87,32 @@ class Article
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     private ?array $barrier_type = null;
 
-    const DESCRIPTION_PATH = '/uploads/documents/';
+    #[ORM\OneToMany(mappedBy: 'article_id', targetEntity: Images::class, orphanRemoval: true, cascade: ['persist'])]
+    private Collection $images;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $updated_at = null;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -196,6 +175,19 @@ class Article
 
         return $this;
     }
+
+    public function getPhotoFile(): ?File
+    {
+        return $this->photoFile;
+    }
+
+    public function setPhotoFile(?File $photo): static
+    {
+        $this->photoFile = $photo;
+
+        return $this;
+    }
+
 
     public function getPhoto(): ?string
     {
@@ -405,4 +397,114 @@ class Article
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Images>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Images $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setArticleId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Images $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getArticleId() === $this) {
+                $image->setArticleId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): static
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
+}
+
+enum BplaSignalKind: int
+{
+
+    case Телеметрія = 1;
+    case Керування = 2;
+    case Відео = 3;
+}
+
+enum BplaLaType: int
+{
+    case Літак = 1;
+    case Крило = 2;
+    case Коптер = 3;
+}
+
+enum BplaEngine: int
+{
+    case Електро = 1;
+    case ДВЗ = 2;
+}
+
+enum BplaSignalType: int
+{
+    case ППРЧ = 1;
+    case ФРЧ = 2;
+}
+
+enum BplaMode: int
+{
+    case Аналог = 1;
+    case Цифра = 2;
+}
+
+enum WorkMode: int
+{
+    case Розвідка = 1;
+    case Подавлення = 2;
+
+    case Пеленгация = 3;
+    case Супровід = 4;
+}
+
+enum WorkType: int
+{
+    case Стаціонарний  = 1;
+    case Мобільний = 2;
+
+    case Окопний = 3;
+}
+
+enum BarrierType: int
+{
+    case Статичний = 1;
+    case Змінний = 2;
 }

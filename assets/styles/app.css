@@ -4,3 +4,13 @@ body {}
     float: left;
     margin-right: 10px;
 }
+
+.gallery-index>a {
+    display: none;
+}
+
+.gallery-index>a:first-child {
+    display: block;
+}
+
+@import '~lightbox2/src/css/lightbox.css';

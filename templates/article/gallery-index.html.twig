@@ -1,0 +1,9 @@
+<div class="gallery-index">
+{% for image in field.value %}
+                                    
+    <a href="/uploads/images/{{ image.name }}" data-lightbox="roadtrip-{{ image.articleId.id }}" class="ea-lightbox-thumbnail">
+        <img src="/uploads/images/{{ image.name }}" class="img-fluid">
+    </a>
+
+{% endfor %}
+</div>

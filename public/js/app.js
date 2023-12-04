@@ -5,14 +5,13 @@
  * (and its CSS file) in your base layout (base.html.twig).
  */
 
-// any CSS you import will output into a single css file (app.css in this case)
-import './styles/app.css';
-
 // require jQuery normally
-// const $ = require('jquery');
-// global.$ = global.jQuery = $;
+//const $ = require('jquery');
+//global.$ = global.jQuery = $;
 
-import 'lightbox2';
+//import '~lightbox2/src/js/lightbox.js';
+
+alert('app.js no webpack');
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -64,26 +63,27 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    if (document.querySelector('#Article_signal')) {
-        document.querySelector('#Article_signal').addEventListener('change', function (Event) {
+    document.querySelector('#Article_signal').addEventListener('click', function (Event) {
 
-            let signal = this;
+        let signal = this;
 
-            [
-                document.querySelector('.bandwidth.form-group'),
-                document.querySelector('.duration.form-group'),
-                document.querySelector('.width.form-group')
-            ].forEach(function (item) {
-                item.parentNode.style.display = signal.checked ? '' : 'none';
-            });
+        [
+            document.querySelector('.bandwidth.form-group'),
+            document.querySelector('.duration.form-group'),
+            document.querySelector('.width.form-group')
+        ].forEach(function (item) {
+            item.parentNode.style.display = signal.checked ? '' : 'none';
+        });
 
-        })
-    }
+    })
 
-    if (document.querySelector('#Article_signal'))
-        document.querySelector('#Article_signal').dispatchEvent(new Event('change'));
-
-    if (document.querySelector('#Article_type input[name="Article[type]"]'))
-        document.querySelector('#Article_type input[name="Article[type]"]').dispatchEvent(new Event('change'));
+    document.querySelector('#Article_type input[name="Article[type]"]:checked').dispatchEvent(new Event('change'));
+    document.querySelector('#Article_signal').dispatchEvent(new Event('click'));
 
 });
+
+//jQuery(document).on('click', '[data-toggle="lightbox"]', function (event) {
+// event.preventDefault();
+// jQuery(this).ekkoLightbox();
+//});
+

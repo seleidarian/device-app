@@ -13,7 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\PasswordHasher\Type\FormTypePasswordHasherExtension;
 use Symfony\Component\Form\Extension\PasswordHasher\Type\PasswordTypePasswordHasherExtension;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_ADMIN')]
 class UsersCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -21,7 +23,7 @@ class UsersCrudController extends AbstractCrudController
         return Users::class;
     }
 
-    public function configureAssets(Assets $assets) : Assets
+    public function configureAssets(Assets $assets): Assets
     {
 
         return $assets;
@@ -30,7 +32,7 @@ class UsersCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id');
+        yield IdField::new('id')->hideOnForm();
         yield TextField::new('username');
 
         yield ChoiceField::new('roles')
@@ -41,5 +43,4 @@ class UsersCrudController extends AbstractCrudController
             ->setFormType(PasswordType::class)
             ->onlyOnForms();
     }
-
 }

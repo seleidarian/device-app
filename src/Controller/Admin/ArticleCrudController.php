@@ -36,8 +36,12 @@ use App\Entity\BplaLaType;
 use App\Entity\BplaMode;
 use App\Entity\BplaSignalKind;
 use App\Entity\BplaSignalType;
+use App\Entity\Images;
 use App\Entity\WorkMode;
 use App\Entity\WorkType;
+use App\Form\ImageAttachmentType;
+use App\Form\Type\CollectionFileType;
+use Doctrine\Common\Collections\Collection;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -46,10 +50,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\ChoiceFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use PhpParser\Node\Expr\Cast\Array_;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Choice;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ArticleCrudController extends AbstractCrudController
 {
@@ -61,13 +69,17 @@ class ArticleCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return
-            $actions->add(Crud::PAGE_INDEX, Action::DETAIL);
+            $actions->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->setPermission(Action::NEW, 'ROLE_MODERATOR')
+            ->setPermission(Action::EDIT, 'ROLE_MODERATOR')
+            ->setPermission(Action::DELETE, 'ROLE_MODERATOR');
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->showEntityActionsInlined();
+            ->showEntityActionsInlined()
+            ->setPageTitle(Crud::PAGE_INDEX, 'Пристрої');
     }
 
 
@@ -104,6 +116,7 @@ class ArticleCrudController extends AbstractCrudController
             ->allowMultipleChoices()
             ->renderExpanded()
             ->setColumns(2)
+            ->setSortable(false)
             ->setChoices(ArticleAims::array());
 
         yield ArrayField::new('frequency')
@@ -243,11 +256,33 @@ class ArticleCrudController extends AbstractCrudController
 
         yield FormField::addPanel();
 
-        yield ImageField::new('photo')
+        yield CollectionField::new('images')
+            ->setEntryType(ImageAttachmentType::class)
+            //->setEntryType(VichImageType::class)
+            //->setFormType(VichImageType::class)
+            //->setFormTypeOption('by_reference', false)
+            ->onlyOnForms();
+
+        yield CollectionField::new('images')
+            ->setTemplatePath('images.html.twig')
+            ->onlyOnDetail();
+
+        // yield TextField::new('photoFile')
+        //     ->setFormType(VichImageType::class)
+        //     ->setLabel('Фото')
+        //     ->setSortable(false)
+        //     ->onlyOnForms();
+
+        yield CollectionField::new('images')
             ->setLabel('Фото')
             ->setSortable(false)
-            ->setBasePath('uploads/images/')
-            ->setUploadDir('public/uploads/images/');
+            ->setTemplatePath('article/gallery-index.html.twig')
+            ->onlyOnIndex();
+
+        // yield ImageField::new('photo')
+        //     ->setBasePath('uploads/images/')
+        //     ->setUploadDir('public/uploads/images/')
+        //     ->hideOnForm();
 
         yield ImageField::new('photo_spectr')
             ->setLabel('Фото спектру')
